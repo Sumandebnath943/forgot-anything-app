@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Forget Anything?</string>
+    <string name="title_activity_main">Forget Anything?</string>
+    <string name="package_name">app.rememberme</string>
+    <string name="custom_url_scheme">app.rememberme</string>
+    
+    <!-- Background Geolocation Configuration -->
+    <string name="capacitor_background_geolocation_notification_channel_name">Location Tracking</string>
+    <string name="capacitor_background_geolocation_notification_icon">mipmap/ic_launcher</string>
+</resources>
