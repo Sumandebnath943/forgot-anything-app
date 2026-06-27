@@ -24,11 +24,9 @@ export const ItemCard = memo(function ItemCard({ item, isSelected, onToggle }: I
   return (
     <motion.button
       whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
       onClick={handleToggle}
       className={cn(
-        'relative w-full rounded-full py-3 px-4 flex items-center gap-3 transition-all duration-300',
+        'relative w-full rounded-full py-3 px-4 flex items-center gap-3 transition-colors duration-300',
         'border',
         isSelected
           ? 'btn-gold shadow-md'

@@ -19,6 +19,9 @@ interface UseReminderServiceOptions {
   mode: ReminderMode;
   geofenceRadiusMeters: number;
   notificationTiming: NotificationTimingSettings;
+  /** Trip window — only enforced in trip mode. */
+  tripStartDate?: Date | null;
+  tripEndDate?: Date | null;
 }
 
 export const useReminderService = ({
@@ -29,7 +32,9 @@ export const useReminderService = ({
   isActive,
   mode,
   geofenceRadiusMeters,
-  notificationTiming
+  notificationTiming,
+  tripStartDate,
+  tripEndDate
 }: UseReminderServiceOptions) => {
   const {
     sendReminderNotification,
@@ -39,6 +44,23 @@ export const useReminderService = ({
   } = useNotifications();
 
   const prevIsActiveRef = useRef(isActive);
+
+  // On native, the Android foreground service (ReminderEngine) is the single
+  // source of truth for firing notifications. The JS monitors still run to
+  // surface live status in the UI, but they must NOT also fire notifications
+  // (that caused duplicate reminders and an inconsistent second "both" gate).
+  const isNativeRef = useRef(false);
+  useEffect(() => {
+    let cancelled = false;
+    import('@capacitor/core')
+      .then(({ Capacitor }) => {
+        if (!cancelled) isNativeRef.current = Capacitor.isNativePlatform();
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // --- "Both" trigger gate ---
   // When trigger === "both", we require BOTH conditions (wifi disconnected
@@ -53,6 +75,11 @@ export const useReminderService = ({
   const sendNotification = useCallback((reason: 'location' | 'wifi' | 'both') => {
     if (!isActive) {
       console.log('[ReminderService] sendNotification called but monitoring is inactive');
+      return;
+    }
+    if (isNativeRef.current) {
+      // Native foreground service handles firing; JS stays status-only to avoid duplicates.
+      console.log(`[ReminderService] (native) skipping JS notification, reason: ${reason} — handled by ReminderEngine`);
       return;
     }
     if (selectedItems.length > 0) {
@@ -191,7 +218,10 @@ export const useReminderService = ({
             items: selectedItems.join(','),
             timingStyle: notificationTiming.style,
             followUpDelaySeconds: notificationTiming.followUpDelaySeconds,
-            thirdDelaySeconds: notificationTiming.thirdDelaySeconds
+            thirdDelaySeconds: notificationTiming.thirdDelaySeconds,
+            // Trip window: only meaningful in trip mode; end-of-day on the end date.
+            tripStartMs: mode === 'trip' && tripStartDate ? new Date(tripStartDate).setHours(0, 0, 0, 0) : 0,
+            tripEndMs: mode === 'trip' && tripEndDate ? new Date(tripEndDate).setHours(23, 59, 59, 999) : 0
           });
           console.log('Settings synced to native plugin');
         } catch (err) {
@@ -201,7 +231,7 @@ export const useReminderService = ({
       syncToNative();
     }, 500);
     return () => clearTimeout(timer);
-  }, [selectedItems, trigger, homeLocation, homeWifiSSID, isActive, mode, geofenceRadiusMeters, notificationTiming]);
+  }, [selectedItems, trigger, homeLocation, homeWifiSSID, isActive, mode, geofenceRadiusMeters, notificationTiming, tripStartDate, tripEndDate]);
 
   // App lifecycle - refresh permissions/status on resume
   useAppLifecycle({

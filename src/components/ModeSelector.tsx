@@ -12,7 +12,7 @@ export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {
     <div className="grid grid-cols-2 gap-4">
       <div
         onClick={() => onModeChange('trip')}
-        className={cn('card-glass group relative rounded-2xl p-4 cursor-pointer overflow-hidden transition-all duration-300', mode === 'trip' && 'border-primary/50 shadow-[0_0_20px_rgba(250,204,21,0.2)]')}
+        className={cn('card-glass group relative rounded-2xl p-4 cursor-pointer overflow-hidden transition-all duration-300', mode === 'trip' && 'border-primary/60 ring-1 ring-primary/30 -translate-y-0.5 shadow-[0_10px_30px_rgba(191,149,63,0.3)]')}
       >
         <div className="relative z-10">
           <div
@@ -48,7 +48,7 @@ export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {
 
       <div
         onClick={() => onModeChange('daily')}
-        className={cn('card-glass group relative rounded-2xl p-4 cursor-pointer overflow-hidden transition-all duration-300', mode === 'daily' && 'border-primary/50 shadow-[0_0_20px_rgba(250,204,21,0.2)]')}
+        className={cn('card-glass group relative rounded-2xl p-4 cursor-pointer overflow-hidden transition-all duration-300', mode === 'daily' && 'border-primary/60 ring-1 ring-primary/30 -translate-y-0.5 shadow-[0_10px_30px_rgba(191,149,63,0.3)]')}
       >
         <div className="relative z-10">
           <div

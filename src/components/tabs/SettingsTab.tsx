@@ -48,10 +48,10 @@ export function SettingsTab({
 }: SettingsTabProps) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       className="space-y-6 pb-24"
     >
       {/* Settings Header with App Logo */}
@@ -81,7 +81,7 @@ export function SettingsTab({
       {/* Gold divider */}
       <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.5) 50%, transparent 100%)' }} />
 
-      <div className="glass shadow-glass rounded-3xl p-6 space-y-6">
+      <div className="card-glass shadow-glass rounded-3xl p-6 space-y-6">
         <h3 className="font-display font-bold text-lg text-primary flex items-center gap-2">
           <span className="w-1 h-6 rounded-full" style={{ background: 'linear-gradient(180deg, #BF953F, #FCF6BA)' }} />
           📍 Location & Triggers
@@ -143,7 +143,7 @@ export function SettingsTab({
       {/* Gold divider */}
       <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.3) 50%, transparent 100%)' }} />
 
-      <div className="glass shadow-glass rounded-3xl p-6 space-y-6">
+      <div className="card-glass shadow-glass rounded-3xl p-6 space-y-6">
         <h3 className="font-display font-bold text-lg text-accent flex items-center gap-2">
           <span className="w-1 h-6 rounded-full" style={{ background: 'linear-gradient(180deg, #FCF6BA, #BF953F)' }} />
           ⏱️ Timings & Delays
@@ -163,7 +163,7 @@ export function SettingsTab({
       {/* Gold divider */}
       <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.3) 50%, transparent 100%)' }} />
 
-      <div className="glass shadow-glass rounded-3xl p-6 space-y-6">
+      <div className="card-glass shadow-glass rounded-3xl p-6 space-y-6">
         <h3 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
           <span className="w-1 h-6 rounded-full" style={{ background: 'linear-gradient(180deg, #BF953F, #A67C00)' }} />
           ⚙️ Diagnostics

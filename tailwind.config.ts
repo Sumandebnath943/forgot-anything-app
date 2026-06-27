@@ -143,6 +143,10 @@ export default {
           "50%": { transform: "scale(1.2)" },
           "100%": { transform: "scale(1)" },
         },
+        "aura": {
+          "0%, 100%": { opacity: "0.4", transform: "scale(0.97)" },
+          "50%": { opacity: "0.75", transform: "scale(1.03)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -161,6 +165,7 @@ export default {
         "logo-entrance": "logo-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
         "gradient-shift": "gradient-shift 4s ease infinite",
         "check-bounce": "check-bounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "aura": "aura 2.6s ease-in-out infinite",
       },
     },
   },

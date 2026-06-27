@@ -53,12 +53,17 @@ export function HeroGreeting({ onSettingsClick }: HeroGreetingProps) {
         </motion.button>
       </div>
       
-      <h1 className="text-3xl font-display font-bold tracking-tight text-foreground leading-tight">
-        {greeting}, <br/>
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Ready to go?</span>
+      <h1 className="text-[2.6rem] font-display font-extrabold tracking-[-0.02em] text-foreground leading-[1.02]">
+        {greeting},<br />
+        <span
+          className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-accent to-primary"
+          style={{ filter: 'drop-shadow(0 2px 10px hsl(var(--primary) / 0.25))' }}
+        >
+          Ready to go?
+        </span>
       </h1>
-      
-      <p className="mt-2 text-muted-foreground font-medium text-sm">
+
+      <p className="mt-3 text-muted-foreground font-medium text-sm leading-relaxed">
         Tap the items you need and turn on tracking.
       </p>
     </motion.div>

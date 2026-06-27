@@ -7,6 +7,8 @@ import { Separator } from '@/components/ui/separator';
 import { ReminderMode, TripSettings, DailySettings } from '@/types/reminder';
 import { motion } from 'framer-motion';
 
+type ReminderStatus = 'inactive' | 'home' | 'away' | 'unknown';
+
 interface HomeTabProps {
   mode: ReminderMode;
   setMode: (mode: ReminderMode) => void;
@@ -14,6 +16,7 @@ interface HomeTabProps {
   handleToggleActive: () => void;
   handleToggleItem: (id: string) => void;
   onSettingsClick: () => void;
+  status?: ReminderStatus;
 }
 
 export function HomeTab({
@@ -23,13 +26,14 @@ export function HomeTab({
   handleToggleActive,
   handleToggleItem,
   onSettingsClick,
+  status = 'inactive',
 }: HomeTabProps) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       className="space-y-8 pb-12"
     >
       <HeroGreeting onSettingsClick={onSettingsClick} />
@@ -44,13 +48,15 @@ export function HomeTab({
           selectedCount={currentSettings.selectedItems.length}
           onToggleActive={handleToggleActive}
           mode={mode}
+          status={status}
         />
       </section>
 
       <Separator className="bg-border/50" />
 
       <section>
-        <h2 className="font-display text-xl font-bold text-foreground mb-4">
+        <h2 className="font-display text-xl font-bold text-foreground mb-4 flex items-center gap-3">
+          <span className="w-1 h-6 rounded-full" style={{ background: 'linear-gradient(180deg, #FCF6BA, #BF953F)' }} />
           {mode === 'trip' ? "What are you packing?" : "Daily essentials"}
         </h2>
         <ItemGrid

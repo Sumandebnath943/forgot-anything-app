@@ -120,6 +120,7 @@ const Index = () => {
     isConnectedToHomeWifi,
     connectionStatus,
     isBackgroundActive,
+    status,
   } = useReminderService({
     selectedItems: currentSettings.selectedItems,
     trigger: currentSettings.trigger,
@@ -128,7 +129,9 @@ const Index = () => {
     isActive: currentSettings.isActive,
     mode,
     geofenceRadiusMeters: currentSettings.geofenceRadiusMeters,
-    notificationTiming: currentSettings.notificationTiming
+    notificationTiming: currentSettings.notificationTiming,
+    tripStartDate: tripSettings.startDate,
+    tripEndDate: tripSettings.endDate
   });
 
   const handleToggleItem = (id: string) => {
@@ -179,10 +182,13 @@ const Index = () => {
       <FirstTimeSetup />
     
       {/* Background */}
-      <div 
+      <div
         className="fixed inset-0 -z-20 bg-[url('/assets/bg-compass.png')] bg-cover bg-center"
       />
-      <div className="fixed inset-0 -z-10 bg-black/20 backdrop-blur-[2px]" />
+      {/* Plain dark scrim (no backdrop-blur): a full-screen blur layer here forced
+          every glass chip to composite through a second nested blur, which is the
+          main source of scroll/jank on mobile. The chips keep their own glass. */}
+      <div className="fixed inset-0 -z-10 bg-black/30" />
       
       <div className="container py-8 pb-28 max-w-lg mx-auto relative z-10">
         <AnimatePresence mode="wait">
@@ -195,6 +201,7 @@ const Index = () => {
               handleToggleActive={handleToggleActive}
               handleToggleItem={handleToggleItem}
               onSettingsClick={() => setCurrentTab('settings')}
+              status={status}
             />
           ) : (
             <SettingsTab 
@@ -221,6 +228,13 @@ const Index = () => {
       </div>
 
       <BottomNav currentTab={currentTab} onChangeTab={setCurrentTab} />
+
+      {/* Filmic finish — ON TOP of the whole UI (pointer-events-none so taps pass
+          through). Vignette darkens the edges to pull focus; grain adds texture
+          over the cards themselves so nothing reads as flat digital color.
+          Both are static — zero scroll cost. */}
+      <div className="pointer-events-none fixed inset-0 z-[55] bg-vignette" />
+      <div className="pointer-events-none fixed inset-0 z-[55] bg-grain" />
     </div>
   );
 };

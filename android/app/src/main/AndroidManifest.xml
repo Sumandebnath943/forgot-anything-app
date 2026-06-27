@@ -22,6 +22,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Required to read the connected WiFi SSID on Android 13+ -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" />
 
     <application
         android:usesCleartextTraffic="true"
@@ -84,6 +86,13 @@
             android:name="app.rememberme.GeofenceBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
+        />
+
+        <!-- Handles the "Got everything!" notification action -->
+        <receiver
+            android:name="app.rememberme.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="false"
         />
     </application>
 </manifest>

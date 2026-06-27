@@ -42,10 +42,10 @@
 
     --radius: 1.5rem;
 
-    /* Glass effects */
+    /* Glass effects (blur kept modest — mobile GPUs choke on large radii) */
     --glass-bg: 0 0% 100% / 0.7;
     --glass-border: 45 90% 50% / 0.3;
-    --glass-blur: 24px;
+    --glass-blur: 12px;
 
     /* Custom gradients */
     --gradient-primary: linear-gradient(135deg, hsl(155 85% 25%) 0%, hsl(160 90% 15%) 100%);
@@ -160,11 +160,26 @@
   }
 
   .card-glass {
-    background: rgba(0, 25, 15, 0.4) !important;
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(212, 175, 55, 0.25) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    /* NO backdrop-filter here. These chips are repeated dozens of times and a
+       real backdrop-blur on each one is the main cause of mobile jank. Instead
+       we fake premium "frosted glass" with layered gradients the GPU renders
+       for free: a soft top light-edge, a faint gold sheen, a deep base, and an
+       inset highlight for dimension. Reads expensive, costs nothing to scroll. */
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.015) 38%, rgba(255, 255, 255, 0) 60%),
+      linear-gradient(180deg, rgba(2, 32, 23, 0.78) 0%, rgba(1, 20, 14, 0.82) 100%) !important;
+    border: 1px solid rgba(212, 175, 55, 0.22) !important;
+    box-shadow:
+      0 10px 28px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  /* Opt-in real glass for the FEW large hero surfaces where the blur is worth
+     it (kept off the repeated chips above). */
+  .card-glass-blur {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 }
 
@@ -176,7 +191,9 @@
   body {
     @apply bg-background text-foreground antialiased min-h-screen;
     background-image: var(--gradient-hero);
-    background-attachment: fixed;
+    /* No background-attachment: fixed — it forces a full-screen repaint on every
+       scroll frame on mobile, and the body bg sits behind Index's own fixed
+       background layer anyway, so it's never visible. */
     font-family: 'Inter', sans-serif;
   }
 
@@ -236,8 +253,8 @@
 
   .glass-strong {
     background: hsl(0 0% 100% / 0.85);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid hsl(0 0% 100% / 0.4);
   }
 
@@ -265,6 +282,20 @@
   /* Glow effects */
   .glow-primary {
     animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  /* Filmic grain — a single static SVG-noise tile at very low opacity. This is
+     the classic "expensive" trick: perfectly clean flat color reads cheap; a
+     whisper of grain reads like film/printed metal. Zero animation cost. */
+  .bg-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.13;
+    mix-blend-mode: overlay;
+  }
+
+  /* Vignette — darkens the edges so the eye falls to the center. Pure gradient. */
+  .bg-vignette {
+    background: radial-gradient(ellipse 88% 68% at 50% 36%, transparent 42%, rgba(0, 0, 0, 0.72) 100%);
   }
 
   /* Input focus glow */
@@ -341,5 +372,18 @@
 
   .input-premium:focus {
     box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1), inset 0 1px 2px hsl(220 25% 10% / 0.05);
+  }
+}
+
+/* Honour the OS "reduce motion" setting: kill long/looping animations and
+   transitions for users who ask for it (also a small battery win). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

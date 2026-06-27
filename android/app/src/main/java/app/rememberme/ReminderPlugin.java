@@ -42,6 +42,13 @@ public class ReminderPlugin extends Plugin {
             int followUpDelay = call.getInt("followUpDelaySeconds", 45);
             int thirdDelay = call.getInt("thirdDelaySeconds", 105);
 
+            // Trip window (epoch millis; 0 = unset). JS numbers arrive as doubles;
+            // millis (~1.7e12) exceed int range, so read as double and cast to long.
+            Double tripStartMsD = call.getDouble("tripStartMs", 0.0);
+            Double tripEndMsD = call.getDouble("tripEndMs", 0.0);
+            long tripStartMs = tripStartMsD != null ? tripStartMsD.longValue() : 0L;
+            long tripEndMs = tripEndMsD != null ? tripEndMsD.longValue() : 0L;
+
             // Save to SharedPreferences
             editor.putString("mode", mode);
             editor.putString("trigger", trigger);
@@ -57,6 +64,9 @@ public class ReminderPlugin extends Plugin {
             editor.putString("timingStyle", timingStyle);
             editor.putInt("followUpDelaySeconds", followUpDelay);
             editor.putInt("thirdDelaySeconds", thirdDelay);
+
+            editor.putLong("tripStartMs", tripStartMs);
+            editor.putLong("tripEndMs", tripEndMs);
 
             editor.apply();
 

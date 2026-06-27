@@ -66,6 +66,7 @@ export const useLocationMonitor = ({
   const watchId = useRef<string | null>(null);
   const hasNotified = useRef(false);
   const wasAtHomeRef = useRef<boolean | null>(null);
+  const lastPosUpdateRef = useRef<number>(0);
   const onLeaveHomeRef = useRef(onLeaveHome);
   const enabledRef = useRef(enabled);
 
@@ -202,8 +203,18 @@ export const useLocationMonitor = ({
             if (!isMounted || !enabledRef.current) return;
 
             if (position) {
-              setCurrentPosition(position);
               const atHome = checkIfAtHome(position);
+              const transitioned = atHome !== wasAtHomeRef.current;
+
+              // Throttle position state updates: re-rendering the whole screen on
+              // every GPS tick is a major source of jank. Native owns triggering,
+              // so the live coords here only feed the debug view — update at most
+              // every 5s, or immediately on a home<->away transition.
+              const now = Date.now();
+              if (transitioned || now - lastPosUpdateRef.current > 5000) {
+                setCurrentPosition(position);
+                lastPosUpdateRef.current = now;
+              }
 
               // Trigger notification when leaving home (was at home, now not at home)
               if (wasAtHomeRef.current === true && !atHome && !hasNotified.current) {
@@ -219,7 +230,7 @@ export const useLocationMonitor = ({
               }
 
               wasAtHomeRef.current = atHome;
-              setIsAtHome(atHome);
+              setIsAtHome(atHome); // React bails out if the value is unchanged
             }
           }
         );
